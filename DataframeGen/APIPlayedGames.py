@@ -1,12 +1,11 @@
 ﻿from Utils.dotenv_util import return_steam_key, return_steam_id
-from Utils.database_util import transfer_df_to_sql
+from Utils.database_util import transfer_df_to_sql, get_friends_list_from_db
 import requests
 import pandas as pd
 
-def fetch_played_games_data() -> pd.DataFrame:
+def fetch_played_games_data(steam_id : int) -> pd.DataFrame:
     """Fetches played games data from the Steam API and returns it as a pandas DataFrame."""
     api_key = return_steam_key()
-    steam_id = return_steam_id()
     url = f"https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
     params = {'key': api_key, 'steamid': steam_id, 'format': 'json', 'include_played_free_games': 1, 'include_free_sub': 1, 'skip_unvetted_apps': 0}
 
@@ -23,6 +22,22 @@ def fetch_played_games_data() -> pd.DataFrame:
 
     return df_played_games
 
+def iterate_over_steam_ids_and_fetch_data(steam_ids: list) -> pd.DataFrame:
+    all_data = pd.DataFrame()
+    for steam_id in steam_ids:
+        df = fetch_played_games_data(steam_id)
+        df['steam_id'] = steam_id  # Add a column to identify the user
+        all_data = pd.concat([all_data, df], ignore_index=True)
+    return all_data
+
+def return_steam_ids_from_db() -> list:
+    friends_df = get_friends_list_from_db()['steamid'].tolist()
+    friends_df.append(int(return_steam_id()))  # Add own Steam ID to the list
+
+    return friends_df
+
+
 if __name__ == "__main__":
-    df = fetch_played_games_data()
+    steam_ids = return_steam_ids_from_db()
+    df = iterate_over_steam_ids_and_fetch_data(steam_ids)
     transfer_df_to_sql(df, table_name='SteamPlayedGames', replace_table=True)
