@@ -28,6 +28,12 @@ def iterate_over_steam_ids_and_fetch_data(steam_ids: list) -> pd.DataFrame:
         df = fetch_played_games_data(steam_id)
         df['steam_id'] = steam_id  # Add a column to identify the user
         all_data = pd.concat([all_data, df], ignore_index=True)
+
+    all_data = all_data.astype(
+        {"appid": 'Int64', "playtime_forever": 'Int64', "playtime_2weeks": 'Int64', "rtime_last_played": 'Int64',
+         "playtime_windows_forever": 'Int64', "playtime_mac_forever": 'Int64', "playtime_linux_forever": 'Int64',
+         "playtime_deck_forever": 'Int64', "playtime_disconnected": 'Int64'})
+
     return all_data
 
 def return_steam_ids_from_db() -> list:

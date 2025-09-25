@@ -26,6 +26,11 @@ def iterate_over_steam_ids_and_fetch_data(steam_ids: list) -> pd.DataFrame:
     for steam_id in steam_ids:
         df = fetch_user_info(steam_id)
         all_data = pd.concat([all_data, df], ignore_index=True)
+
+    all_data = all_data.astype({"steamid": 'Int64', "communityvisibilitystate": 'Int64', "profilestate": 'Int64',
+                                "commentpermission": 'Int64', "lastlogoff": 'Int64', "personastate": 'Int64',
+                                "primaryclanid": 'Int64', "timecreated": 'Int64', "personastateflags": 'Int64',
+                                "loccityid": 'Int64'})
     return all_data
 
 def return_steam_ids_from_db() -> list:
