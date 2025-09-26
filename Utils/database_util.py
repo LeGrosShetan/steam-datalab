@@ -27,3 +27,9 @@ def get_friends_list_from_db() -> pd.DataFrame:
     df = pd.read_sql(query, con=return_engine())
 
     return df
+
+def get_app_list_from_db() -> pd.DataFrame:
+    query = "SELECT DISTINCT appid FROM SteamPlayedGames"
+    df = pd.read_sql(query, con=return_engine())
+
+    return df.drop_duplicates(subset=['appid'])
