@@ -89,7 +89,7 @@ def iterate_over_app_ids_and_fetch_data(app_ids: list) -> pd.DataFrame:
 def return_app_ids_from_db() -> list:
     app_ids = get_app_list_from_db()['appid'].astype("Int64")
 
-    return app_ids.tolist()
+    return app_ids.unique().tolist()
 
 if __name__ == "__main__":
     app_ids = return_app_ids_from_db()
